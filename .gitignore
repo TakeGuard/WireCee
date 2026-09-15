@@ -1,10 +1,8 @@
 build/out/
 build/obj/
 dist/
-.claude/
 third_party/cef/lib/
 third_party/cef/runtime/
-
 .vs/
 *.user
 *.suo
@@ -12,6 +10,3 @@ third_party/cef/runtime/
 *.pdb
 *.ilk
 *.obj
-*.tlog
-
-tests/*.log
