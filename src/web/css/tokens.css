@@ -1,0 +1,90 @@
+:root {
+  --tg-brand: 43 76 140;
+  --tg-brand-lit: 78 124 205;
+  --tg-brand-deep: 14 28 58;
+
+  --tg-ok: 52 168 116;
+  --tg-warn: 214 158 46;
+  --tg-bad: 208 78 78;
+
+  --tg-radius: 18px;
+  --tg-radius-lg: 26px;
+  --tg-radius-sm: 12px;
+  --tg-blur: 22px;
+  --tg-gap: 20px;
+
+  --tg-rail: 232px;
+  --tg-rail-collapsed: 68px;
+  --tg-topbar-h: 72px;
+
+  --tg-font-ui: ui-sans-serif, system-ui, "Segoe UI Variable Text", "Segoe UI",
+    "Cantarell", "Ubuntu", "Noto Sans", "DejaVu Sans", sans-serif;
+  --tg-font-display: "Segoe UI Variable Display", "Segoe UI", ui-sans-serif,
+    system-ui, "Cantarell", "Ubuntu", "Noto Sans", sans-serif;
+  --tg-font-mono: "Cascadia Code", "JetBrains Mono", ui-monospace, "Consolas",
+    "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --tg-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --tg-bg: #05080f;
+  --tg-text: #e7edf9;
+  --tg-muted: #8fa0bd;
+  --tg-faint: #5d6c88;
+  --tg-accent-text: 127 168 255;
+
+  --tg-glass: rgb(255 255 255 / 5%);
+  --tg-glass-strong: rgb(255 255 255 / 8%);
+  --tg-glass-border: rgb(255 255 255 / 10%);
+  --tg-glass-highlight: rgb(255 255 255 / 16%);
+  --tg-glass-shadow: 0 18px 50px rgb(0 0 0 / 45%);
+
+  --tg-menu: rgb(18 26 44 / 97%);
+
+  --tg-ambient-a: rgb(var(--tg-brand) / 42%);
+  --tg-ambient-b: rgb(var(--tg-brand-lit) / 22%);
+  --tg-ambient-c: rgb(var(--tg-brand-deep) / 90%);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --tg-bg: #e9eef7;
+  --tg-text: #0b1424;
+  --tg-muted: #55637d;
+  --tg-faint: #7c88a0;
+  --tg-accent-text: 33 62 122;
+
+  --tg-glass: rgb(255 255 255 / 58%);
+  --tg-glass-strong: rgb(255 255 255 / 72%);
+  --tg-glass-border: rgb(255 255 255 / 85%);
+  --tg-glass-highlight: rgb(255 255 255 / 95%);
+  --tg-glass-shadow: 0 18px 45px rgb(18 38 78 / 12%);
+  --tg-menu: rgb(252 253 255 / 98%);
+
+  --tg-ambient-a: rgb(var(--tg-brand-lit) / 30%);
+  --tg-ambient-b: rgb(var(--tg-brand) / 16%);
+  --tg-ambient-c: rgb(214 226 245 / 100%);
+}
+
+@property --tg-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --tg-dash {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+@keyframes tg-spin {
+  to {
+    --tg-angle: 360deg;
+  }
+}

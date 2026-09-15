@@ -1,0 +1,6 @@
+#ifndef WIRECEE_VERSION_H
+#define WIRECEE_VERSION_H
+
+#define WIRECEE_VERSION "0.2.0"
+
+#endif

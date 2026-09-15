@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{8F3A21C4-1D5E-4B72-9A08-5C6E1F0D2A31}</ProjectGuid>
+    <RootNamespace>WireCeeHost</RootNamespace>
+    <ProjectName>WireCeeHost</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset Condition="'$(DefaultPlatformToolset)' != ''">$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(DefaultPlatformToolset)' == ''">v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+
+  <PropertyGroup>
+    <SrcRoot>$(ProjectDir)..\..\</SrcRoot>
+    <OutDir>$(SrcRoot)build\out\windows\</OutDir>
+    <IntDir>$(SrcRoot)build\obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>WireCee</TargetName>
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SrcRoot)src\core;$(SrcRoot)src\windows;$(SrcRoot)third_party\civetweb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;_CONSOLE;NO_SSL;NO_CGI;USE_IPV6;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <WarningLevel>Level3</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;fwpuclnt.lib;Advapi32.lib;gdiplus.lib;Shell32.lib;User32.lib;Comctl32.lib;Ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Message>Staging the web interface</Message>
+      <Command>robocopy "$(SrcRoot)src\web" "$(OutDir)app" /E /XO /NJH /NJS /NDL /NP /R:2 /W:1 &gt;nul
+if errorlevel 8 exit 1
+exit 0</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ResourceCompile Include="$(SrcRoot)src\windows\wirecee.rc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="$(SrcRoot)src\core\api.c" />
+    <ClCompile Include="$(SrcRoot)src\core\cli.c" />
+    <ClCompile Include="$(SrcRoot)src\core\dnsd.c" />
+    <ClCompile Include="$(SrcRoot)src\core\engine.c" />
+    <ClCompile Include="$(SrcRoot)src\core\hostmap.c" />
+    <ClCompile Include="$(SrcRoot)src\windows\flows_etw.c" />
+    <ClCompile Include="$(SrcRoot)src\windows\fw_wfp.c" />
+    <ClCompile Include="$(SrcRoot)src\windows\host.c" />
+    <ClCompile Include="$(SrcRoot)src\windows\netenum_win.c" />
+    <ClCompile Include="$(SrcRoot)src\windows\platform_win.c" />
+    <ClCompile Include="$(SrcRoot)third_party\civetweb\civetweb.c" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="$(SrcRoot)src\core\api.h" />
+    <ClInclude Include="$(SrcRoot)src\core\cli.h" />
+    <ClInclude Include="$(SrcRoot)src\core\compat.h" />
+    <ClInclude Include="$(SrcRoot)src\core\dnsd.h" />
+    <ClInclude Include="$(SrcRoot)src\core\engine.h" />
+    <ClInclude Include="$(SrcRoot)src\core\flows.h" />
+    <ClInclude Include="$(SrcRoot)src\core\fw.h" />
+    <ClInclude Include="$(SrcRoot)src\core\hostmap.h" />
+    <ClInclude Include="$(SrcRoot)src\core\netenum.h" />
+    <ClInclude Include="$(SrcRoot)src\core\platform.h" />
+    <ClInclude Include="$(SrcRoot)src\core\version.h" />
+    <ClInclude Include="$(SrcRoot)src\windows\host.h" />
+    <ClInclude Include="$(SrcRoot)third_party\civetweb\civetweb.h" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

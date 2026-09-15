@@ -1,0 +1,31 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WireCeeHost", "WireCeeHost.vcxproj", "{8F3A21C4-1D5E-4B72-9A08-5C6E1F0D2A31}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7C49E02-6A13-4F88-B5D1-3E9A7C244F60} = {B7C49E02-6A13-4F88-B5D1-3E9A7C244F60}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WireCeeUI", "WireCeeUI.vcxproj", "{B7C49E02-6A13-4F88-B5D1-3E9A7C244F60}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F3A21C4-1D5E-4B72-9A08-5C6E1F0D2A31}.Debug|x64.ActiveCfg = Debug|x64
+		{8F3A21C4-1D5E-4B72-9A08-5C6E1F0D2A31}.Debug|x64.Build.0 = Debug|x64
+		{8F3A21C4-1D5E-4B72-9A08-5C6E1F0D2A31}.Release|x64.ActiveCfg = Release|x64
+		{8F3A21C4-1D5E-4B72-9A08-5C6E1F0D2A31}.Release|x64.Build.0 = Release|x64
+		{B7C49E02-6A13-4F88-B5D1-3E9A7C244F60}.Debug|x64.ActiveCfg = Debug|x64
+		{B7C49E02-6A13-4F88-B5D1-3E9A7C244F60}.Debug|x64.Build.0 = Debug|x64
+		{B7C49E02-6A13-4F88-B5D1-3E9A7C244F60}.Release|x64.ActiveCfg = Release|x64
+		{B7C49E02-6A13-4F88-B5D1-3E9A7C244F60}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
