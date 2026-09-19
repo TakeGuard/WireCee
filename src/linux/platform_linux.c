@@ -207,6 +207,32 @@ int plat_run(const char *command)
     return WIFEXITED(rc) ? WEXITSTATUS(rc) : -1;
 }
 
+int plat_linux_spawn(char *const argv[], int wait_for_exit)
+{
+    pid_t pid = fork();
+    int status = 0;
+
+    if (pid < 0) return -1;
+    if (pid == 0) {
+        int null_fd = open("/dev/null", O_RDWR);
+        if (null_fd >= 0) {
+            dup2(null_fd, STDIN_FILENO);
+            dup2(null_fd, STDOUT_FILENO);
+            dup2(null_fd, STDERR_FILENO);
+            if (null_fd > STDERR_FILENO) close(null_fd);
+        }
+        if (!wait_for_exit) {
+            setsid();
+            if (fork() != 0) _exit(0);
+        }
+        execvp(argv[0], argv);
+        _exit(127);
+    }
+    if (waitpid(pid, &status, 0) < 0) return -1;
+    if (!wait_for_exit) return 0;
+    return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+}
+
 int plat_linux_write_unit(void)
 {
     char exe[MAX_PATH];

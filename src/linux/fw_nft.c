@@ -308,6 +308,16 @@ static int group_of(unsigned long pid)
     return group;
 }
 
+static int endpoint_text(const char *s)
+{
+    if (!*s) return 0;
+    for (; *s; s++) {
+        if (!((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z') ||
+              *s == '.' || *s == ':' || *s == '[' || *s == ']' || *s == '%' || *s == '_' || *s == '-')) return 0;
+    }
+    return 1;
+}
+
 static void cut_sockets(const unsigned long *pids, int count)
 {
     static unsigned long inodes[4096];
@@ -345,8 +355,8 @@ static void cut_sockets(const unsigned long *pids, int count)
         if (!ino || sscanf(line, "%7s %15s %15s %15s %127s %127s", netid, state, rq, sq, local, peer) != 6) continue;
         inode = strtoul(ino + 4, NULL, 10);
         for (i = 0; i < n && !hit; i++) hit = inodes[i] == inode;
-        if (!hit || strchr(peer, '*')) continue;
-        _snprintf_s(command, sizeof command, _TRUNCATE, "ss -K -%c src %s dst %s >/dev/null 2>&1",
+        if (!hit || strchr(peer, '*') || !endpoint_text(local) || !endpoint_text(peer)) continue;
+        _snprintf_s(command, sizeof command, _TRUNCATE, "ss -K -%c src %s dst %s",
                     netid[0] == 'u' ? 'u' : 't', local, peer);
         plat_run(command);
     }

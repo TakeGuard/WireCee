@@ -5,10 +5,12 @@
 #include "engine.h"
 #include "platform.h"
 
+#include <pwd.h>
 #include <signal.h>
 #include <sys/stat.h>
 
 int plat_linux_write_unit(void);
+int plat_linux_spawn(char *const argv[], int wait_for_exit);
 
 static volatile sig_atomic_t g_stop = 0;
 
@@ -98,28 +100,45 @@ static int service_command(const Options *opt)
     }
 }
 
+static void clean_text(char *out, size_t cap, const char *in)
+{
+    size_t n = 0;
+    for (; *in && n + 1 < cap; in++) {
+        unsigned char c = (unsigned char)*in;
+        out[n++] = c < 0x20 || c == 0x7f ? ' ' : (char)c;
+    }
+    out[n] = '\0';
+}
+
+static const struct passwd *session_user(void)
+{
+    const char *user = getenv("SUDO_USER");
+    if (geteuid() != 0 || !user || !*user) return NULL;
+    return getpwnam(user);
+}
+
 static void desktop_notify(const char *title, const char *body)
 {
-    char command[1024], safe_title[128], safe_body[400];
-    const char *user = getenv("SUDO_USER");
-    size_t i;
+    char safe_title[128], safe_body[400], display[64], bus[96], uid[16];
+    const struct passwd *pw = session_user();
+    const char *env_display = getenv("DISPLAY");
 
-    strncpy_s(safe_title, sizeof safe_title, title, _TRUNCATE);
-    strncpy_s(safe_body, sizeof safe_body, body, _TRUNCATE);
-    for (i = 0; safe_title[i]; i++) if (safe_title[i] == '"' || safe_title[i] == '`') safe_title[i] = '\'';
-    for (i = 0; safe_body[i]; i++) if (safe_body[i] == '"' || safe_body[i] == '`') safe_body[i] = '\'';
+    clean_text(safe_title, sizeof safe_title, title);
+    clean_text(safe_body, sizeof safe_body, body);
 
-    if (geteuid() == 0 && user && *user) {
-        _snprintf_s(command, sizeof command, _TRUNCATE,
-                    "sudo -u %s DISPLAY=${DISPLAY:-:0} "
-                    "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u %s)/bus "
-                    "notify-send -a WireCee \"%s\" \"%s\"",
-                    user, user, safe_title, safe_body);
+    if (pw) {
+        char *argv[] = {"sudo", "-u", uid, "env", display, bus, "notify-send", "-a", "WireCee", "--",
+                        safe_title, safe_body, NULL};
+        _snprintf_s(uid, sizeof uid, _TRUNCATE, "#%lu", (unsigned long)pw->pw_uid);
+        _snprintf_s(display, sizeof display, _TRUNCATE, "DISPLAY=%s",
+                    env_display && *env_display ? env_display : ":0");
+        _snprintf_s(bus, sizeof bus, _TRUNCATE, "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%lu/bus",
+                    (unsigned long)pw->pw_uid);
+        plat_linux_spawn(argv, 1);
     } else {
-        _snprintf_s(command, sizeof command, _TRUNCATE,
-                    "notify-send -a WireCee \"%s\" \"%s\"", safe_title, safe_body);
+        char *argv[] = {"notify-send", "-a", "WireCee", "--", safe_title, safe_body, NULL};
+        plat_linux_spawn(argv, 1);
     }
-    plat_run(command);
 }
 
 static void pump_notices(void)
@@ -145,14 +164,18 @@ static void pump_notices(void)
 
 static void open_browser(const char *url)
 {
-    char command[512];
-    const char *user = getenv("SUDO_USER");
-    if (geteuid() == 0 && user && *user) {
-        _snprintf_s(command, sizeof command, _TRUNCATE, "sudo -u %s xdg-open %s &", user, url);
+    char link[128], uid[16];
+    const struct passwd *pw = session_user();
+
+    strncpy_s(link, sizeof link, url, _TRUNCATE);
+    if (pw) {
+        char *argv[] = {"sudo", "-u", uid, "xdg-open", link, NULL};
+        _snprintf_s(uid, sizeof uid, _TRUNCATE, "#%lu", (unsigned long)pw->pw_uid);
+        plat_linux_spawn(argv, 0);
     } else {
-        _snprintf_s(command, sizeof command, _TRUNCATE, "xdg-open %s &", url);
+        char *argv[] = {"xdg-open", link, NULL};
+        plat_linux_spawn(argv, 0);
     }
-    plat_run(command);
 }
 
 int main(int argc, char **argv)
